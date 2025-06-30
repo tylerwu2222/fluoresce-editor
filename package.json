@@ -54,5 +54,12 @@
     "storybook": "^8.6.12",
     "tsup": "^8.4.0",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@lexical/code": "^0.32.1",
+    "@lexical/list": "^0.32.1",
+    "@lexical/react": "^0.32.1",
+    "@lexical/rich-text": "^0.32.1",
+    "lexical": "^0.32.1"
   }
 }
