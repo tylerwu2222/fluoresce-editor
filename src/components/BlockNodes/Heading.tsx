@@ -1,5 +1,5 @@
 import React from 'react';
-import { HeadingNode } from '../types';
+import { HeadingNode, HeadingTag } from '../types';
 import { Tag } from '../Tag';
 
 interface HeadingProps {
@@ -7,8 +7,14 @@ interface HeadingProps {
 }
 
 export const Heading: React.FC<HeadingProps> = ({ node }) => {
-  const level = parseInt(node.type.replace('heading', ''));
-  const tag = `h${Math.min(Math.max(level, 1), 6)}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+
+  const formatHeading = (node: HeadingNode): HeadingTag => {
+    const providedLevel = parseInt(node.type.replace('heading', ''));
+    const validLevel = Math.min(Math.max(providedLevel, 1), 6);
+    return `h${validLevel}` as HeadingTag;
+  }
+
+  const tag = formatHeading(node);
   
   return (
     <Tag as={tag} style={node.styles}>

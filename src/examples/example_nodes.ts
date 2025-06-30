@@ -1,6 +1,6 @@
-import { FluoresceNode } from "../components/types";
+import { Node } from "../components/types";
 
-export const exampleNodes: FluoresceNode[] = [
+export const exampleNodes: Node[] = [
   { id: "1", type: "heading1", text: "This is a heading" },
   { id: "2", type: "paragraph", text: "Start typing here..." },
   {
