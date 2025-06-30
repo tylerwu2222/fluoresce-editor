@@ -1,6 +1,6 @@
 ## fluoresce-editor
 
-An opinionated rich-text editor built with React and TypeScript. (Coming soon™️)
+An opinionated rich-text editor built on top of lexical for use with ELNs (electric lab notebooks).
 
 ### Planned Features
 
@@ -12,7 +12,8 @@ An opinionated rich-text editor built with React and TypeScript. (Coming soon™
 - customizable toolbar
 - keyboard shortcuts
 
-#### more interesting features
-- inline dropdowns
-- text statistics (think word count, but even more granular)
-- custom nodes
+#### ELN-geared features:
+- **inline dropdowns/number inputs** - for quickly modifying numbers in protocols
+- **synced material counts**: update a material amount for a single step -> get updated total amount needed for the protocol
+- **popover videos** so labmates can record standard operating procedures for specific steps
+- more custom nodes...
