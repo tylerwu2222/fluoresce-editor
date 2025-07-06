@@ -24,11 +24,33 @@ __export(index_exports, {
 });
 module.exports = __toCommonJS(index_exports);
 
-// src/Editor.tsx
+// src/components/Editor.tsx
+var import_LexicalComposer = require("@lexical/react/LexicalComposer");
+var import_LexicalPlainTextPlugin = require("@lexical/react/LexicalPlainTextPlugin");
+var import_LexicalContentEditable = require("@lexical/react/LexicalContentEditable");
+var import_LexicalErrorBoundary = require("@lexical/react/LexicalErrorBoundary");
 var import_jsx_runtime = require("react/jsx-runtime");
-var Editor = () => {
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { contentEditable: true, children: "Start typing here..." });
+var theme = {
+  // Customize styling or leave empty to use default
 };
+function Editor() {
+  const initialConfig = {
+    namespace: "FluoresceEditor",
+    theme,
+    onError(error) {
+      throw error;
+    },
+    editorState: null
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_LexicalComposer.LexicalComposer, { initialConfig, children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+    import_LexicalPlainTextPlugin.PlainTextPlugin,
+    {
+      contentEditable: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_LexicalContentEditable.ContentEditable, { className: "editor-input" }),
+      placeholder: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "editor-placeholder", children: "Type lab notes\u2026" }),
+      ErrorBoundary: import_LexicalErrorBoundary.LexicalErrorBoundary
+    }
+  ) });
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   Editor
