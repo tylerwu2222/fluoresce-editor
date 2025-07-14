@@ -10,6 +10,10 @@ export default meta;
 type Story = StoryObj<typeof Editor>;
 
 export const Default: Story = {
+  args: {
+    shouldAnimate: true,
+    placeholder: "Type lab notes..."
+  }
 };
 
 export const CustomStyle: Story = {
