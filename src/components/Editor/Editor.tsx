@@ -14,22 +14,32 @@ import { ListItemNode, ListNode } from "@lexical/list";
 import { QuoteNode } from "@lexical/rich-text";
 import { CodeNode, CodeHighlightNode } from "@lexical/code";
 import { HorizontalRuleNode } from "@lexical/react/LexicalHorizontalRuleNode";
+import ToolbarPlugin from "../plugins/ToolbarPlugin/ToolbarPlugin";
 import "./Editor.css";
+import { EditorSettingsContext } from './EditorSettingsContext';
+import { EditorContext } from './EditorContext';
+import EditorStatePlugin from "../plugins/EditorStatePlugin/EditorStatePlugin";
 
 const themeDefault = {
   text: {
     bold: "defaultBold",
     italic: "defaultItalic",
+    underline: "defaultUnderline",
+    strikethrough: "defaultStrikethrough",
+    code: "defaultCode",
   },
 };
 
 interface EditorProps {
   placeholder?: string;
+  shouldAnimate?: boolean;
 }
 
 export default function Editor({
   placeholder = "Type lab notes…",
+  shouldAnimate = true,
 }: EditorProps) {
+  const [isHovered, setIsHovered] = React.useState(false);
   const initialConfig = {
     namespace: "FluoresceEditor",
     theme: themeDefault,
@@ -50,24 +60,35 @@ export default function Editor({
   };
 
   return (
-    <div className="editorContainer">
-      <LexicalComposer initialConfig={initialConfig}>
-        <RichTextPlugin
-          contentEditable={<ContentEditable className="editorInput" />}
-          placeholder={<div className="editorPlaceholder">{placeholder}</div>}
-          ErrorBoundary={LexicalErrorBoundary}
-        />
-        <HistoryPlugin />
-        <OnChangePlugin
-          onChange={(editorState: EditorState) => {
-            editorState.read(() => {
-              const json = editorState.toJSON();
-              console.log("Editor State:", json);
-            });
-          }}
-        />
-        <MarkdownShortcutPlugin />
-      </LexicalComposer>
+    <div
+      className="editorContainer"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <EditorSettingsContext.Provider value={{ shouldAnimate, isEditorHovered: isHovered }}>
+        <LexicalComposer initialConfig={initialConfig}>
+          <EditorStatePlugin>
+            <ToolbarPlugin />
+            <div className={`editorContentArea`}>
+              <RichTextPlugin
+                contentEditable={<ContentEditable className="editorInput" />}
+                placeholder={<div className="editorPlaceholder">{placeholder}</div>}
+                ErrorBoundary={LexicalErrorBoundary}
+              />
+            </div>
+          </EditorStatePlugin>
+          <HistoryPlugin />
+          <OnChangePlugin
+            onChange={(editorState: EditorState) => {
+              editorState.read(() => {
+                const json = editorState.toJSON();
+                console.log("Editor State:", json);
+              });
+            }}
+          />
+          <MarkdownShortcutPlugin />
+        </LexicalComposer>
+      </EditorSettingsContext.Provider>
     </div>
   );
 }
