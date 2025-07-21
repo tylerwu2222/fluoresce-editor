@@ -17,8 +17,8 @@ import { HorizontalRuleNode } from "@lexical/react/LexicalHorizontalRuleNode";
 import ToolbarPlugin from "../plugins/ToolbarPlugin/ToolbarPlugin";
 import "./Editor.css";
 import { EditorSettingsContext } from './EditorSettingsContext';
-import { EditorContext } from './EditorContext';
 import EditorStatePlugin from "../plugins/EditorStatePlugin/EditorStatePlugin";
+import ExitBlockOnEmptyPlugin from "../plugins/ExitBlockOnEmptyPlugin/ExitBlockOnEmptyPlugin";
 
 const themeDefault = {
   text: {
@@ -68,6 +68,7 @@ export default function Editor({
       <EditorSettingsContext.Provider value={{ shouldAnimate, isEditorHovered: isHovered }}>
         <LexicalComposer initialConfig={initialConfig}>
           <EditorStatePlugin>
+            <ExitBlockOnEmptyPlugin />
             <ToolbarPlugin />
             <div className={`editorContentArea`}>
               <RichTextPlugin
