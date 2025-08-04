@@ -1,0 +1,24 @@
+.slash-menu {
+  position: fixed;
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  border-radius: 6px;
+  min-width: 180px;
+  z-index: 1000;
+  margin-top: 4px;
+  font-family: var(--font-primary);
+}
+
+.slash-menu-options-wrapper {
+  padding: 4px 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.slash-menu-footer {
+  border-top: 1px solid #eee;
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  color: #777;
+}

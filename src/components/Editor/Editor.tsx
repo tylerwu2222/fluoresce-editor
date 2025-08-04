@@ -11,16 +11,21 @@ import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode } from "@lexical/rich-text";
 import { LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
+import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { QuoteNode } from "@lexical/rich-text";
 import { CodeNode, CodeHighlightNode } from "@lexical/code";
 import { HorizontalRuleNode } from "@lexical/react/LexicalHorizontalRuleNode";
 import ToolbarPlugin from "../plugins/ToolbarPlugin/ToolbarPlugin";
-import "./Editor.css";
+import SlashMenuPlugin from "../plugins/SlashMenuPlugin/SlashMenuPlugin";
 import { EditorSettingsContext } from './EditorSettingsContext';
 import EditorStatePlugin from "../plugins/EditorStatePlugin/EditorStatePlugin";
 import ExitBlockOnEmptyPlugin from "../plugins/ExitBlockOnEmptyPlugin/ExitBlockOnEmptyPlugin";
+import { CategoricalMaterialNode } from "../nodes/MaterialNodes/CategoricalMaterialNode/CategoricalMaterialNode";
+import { NumericalMaterialNode } from "../nodes/MaterialNodes/NumericalMaterialNode/NumericalMaterialNode";
+import "./Editor.css";
 
 const themeDefault = {
+  // inline styles
   text: {
     bold: "defaultBold",
     italic: "defaultItalic",
@@ -28,6 +33,9 @@ const themeDefault = {
     strikethrough: "defaultStrikethrough",
     code: "defaultCode",
   },
+  // block styles
+  code: "editorCode",
+  quote: "editorQuote",
 };
 
 interface EditorProps {
@@ -56,6 +64,8 @@ export default function Editor({
       ListItemNode,
       ListNode,
       QuoteNode,
+      CategoricalMaterialNode,
+      NumericalMaterialNode,
     ],
   };
 
@@ -70,6 +80,8 @@ export default function Editor({
           <EditorStatePlugin>
             <ExitBlockOnEmptyPlugin />
             <ToolbarPlugin />
+            <ListPlugin />
+            <SlashMenuPlugin />
             <div className={`editorContentArea`}>
               <RichTextPlugin
                 contentEditable={<ContentEditable className="editorInput" />}
@@ -83,7 +95,7 @@ export default function Editor({
             onChange={(editorState: EditorState) => {
               editorState.read(() => {
                 const json = editorState.toJSON();
-                console.log("Editor State:", json);
+                // consNole.log("Editor State:", json);
               });
             }}
           />

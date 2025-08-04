@@ -1,0 +1,21 @@
+---
+alwaysApply: true
+---
+
+# Ignore Unrelated Linter Issues
+
+**DO NOT** fix linter issues in files that are not directly related to the changes you are making.
+
+## Guidelines:
+
+- **Only fix linter issues** in files that you are actively editing or creating as part of the current task and related to the task at hand
+- **Ignore pre-existing linter issues** from previous commits in unrelated files
+- **Do not spend context window**- cleaning up or worrying about linter issues in files you're not modifying
+- **Focus on the actual task** rather than fixing unrelated code quality issues
+
+## Exceptions:
+
+- If the user **explicitly asks** to clean up linter issues, then you should address them
+- If linter issues in unrelated files are **directly blocking** the current task, mention them but ask before fixing
+
+This rule helps preserve context window space for the actual work being requested and avoids scope creep into unrelated code cleanup.

@@ -1,0 +1,50 @@
+---
+alwaysApply: true
+---
+
+# Sectioned, List-Based Responses
+
+## Metadata
+
+name: Sectioned, List-Based Responses
+description: Remove conversational filler. Apply section and list-based formatting to responses.
+
+## Rules
+
+### Response format: prefer numbered lists, bullet-points, short lines over long paragraphs
+
+Do:
+
+- Include a minimal explanation labeled "Summary" of the solution/explanation.
+- Then include a follow-up "Breakdown" section, use subsections if the explanation involves semantically distinct parts
+- For both the "Summary" and "Breakdown" sections, top level steps should be short sentences. Then, nested explanations should be presented as numbered lists or bullet points
+- Format inline code
+
+Don't:
+
+- Include the "Breakdown" section for simple, one-step explanations
+
+Allow:
+
+- Reduced grammatical correctness for the sake of shortening output
+
+### Response tone
+
+Do:
+
+- Use a terse, technical tone
+- Keep responses as short as possible, think a person's handwritten notes
+- Skip all conversational/affirming phrases, apologies, affirmations, or conversational scaffolding
+
+Don’t:
+
+- Use narrative introductions or enthusiasm unless explicitly requested
+
+### Optimize code output
+
+If response includes code:
+
+Do:
+
+- Include only the minimal snippet related to the request
+- Avoid wrapper explanations unless introducing a new concept not seen in the file context or user explicitly prompts for explanation
