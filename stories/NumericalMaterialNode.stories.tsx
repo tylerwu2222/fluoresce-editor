@@ -1,12 +1,12 @@
 import React from "react";
-import { NumericalMaterialPreview } from "../src/components/nodes/MaterialNodes/MaterialNodeNumerical/MaterialNodeNumerical";
+import { NumericalMaterialNodePreview } from "../src/components/nodes/MaterialNodes/NumericalMaterialNode/NumericalMaterialNode";
 
 export default {
   title: "MaterialNodes/NumericalMaterialNode",
-  component: NumericalMaterialPreview,
+  component: NumericalMaterialNodePreview,
 };
 
-const Template = (args: any) => <NumericalMaterialPreview {...args} />;
+const Template = (args: any) => <NumericalMaterialNodePreview {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
@@ -15,6 +15,7 @@ Default.args = {
   min: 0,
   max: 100,
   value: 42,
+  unit: "g/L",
 };
 
 export const Custom = Template.bind({});
@@ -24,4 +25,5 @@ Custom.args = {
   min: -10,
   max: 50,
   value: 10,
-}; 
+  unit: "g/L",
+};

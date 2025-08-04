@@ -1,12 +1,12 @@
 import React from "react";
-import { CategoricalMaterialPreview } from "../src/components/nodes/MaterialNodes/MaterialNodeCategorical/MaterialNodeCategorical";
+import { CategoricalMaterialNodePreview } from "../src/components/nodes/MaterialNodes/CategoricalMaterialNode/CategoricalMaterialNode";
 
 export default {
   title: "MaterialNodes/CategoricalMaterialNode",
-  component: CategoricalMaterialPreview,
+  component: CategoricalMaterialNodePreview,
 };
 
-const Template = (args: any) => <CategoricalMaterialPreview {...args} />;
+const Template = (args: any) => <CategoricalMaterialNodePreview {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {

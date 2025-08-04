@@ -10,3 +10,12 @@
   font-weight: 300;
   font-family: "Inter", sans-serif;
 }
+
+.material-node-category-label {
+  margin-inline-end: 6px;
+}
+
+.material-node-numeric-unit {
+  font-size: 0.75em;
+  margin: 0 0.5em;
+}

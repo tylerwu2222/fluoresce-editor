@@ -18,38 +18,26 @@ import {
   $isRangeSelection,
   $createParagraphNode,
   $isRootOrShadowRoot,
-  FORMAT_TEXT_COMMAND,
 } from "lexical";
 import { $setBlocksType } from "@lexical/selection";
 import { $findMatchingParent } from "@lexical/utils";
 import { EditorSettingsContext } from "../../Editor/EditorSettingsContext";
 import { EditorContext } from "../../Editor/EditorContext";
+import { createBlockTypeMap, getNodeAction } from "../../Editor/editorConfig";
+import { getTextFormatOptions, executeTextFormat } from "./toolbarConfig";
 
 import "./ToolbarPlugin.css";
 
-const BlockTypeMap = new Map([
-  ["paragraph", "Paragraph"],
-  ["h1", "Heading 1"],
-  ["h2", "Heading 2"],
-  ["h3", "Heading 3"],
-  ["ul", "Bullet List"],
-  ["ol", "Numbered List"],
-  ["quote", "Quote"],
-  ["code", "Code Block"],
-]);
+const BlockTypeMap = createBlockTypeMap();
 
 export default function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
   const { shouldAnimate } = React.useContext(EditorSettingsContext);
+  const editorContext = React.useContext(EditorContext);
   const {
     isEditorActive,
     isContentSelected,
-    isBoldToggleOn,
-    isItalicToggleOn,
-    isUnderlineToggleOn,
-    isStrikethroughToggleOn,
-    isCodeToggleOn,
-  } = React.useContext(EditorContext);
+  } = editorContext;
   const [blockType, setBlockType] = React.useState("paragraph");
 
   React.useEffect(() => {
@@ -90,82 +78,23 @@ export default function ToolbarPlugin() {
     });
   }, [editor]);
 
-  const formatParagraph = () => {
-    editor.update(() => {
-      const selection = $getSelection();
-      if ($isRangeSelection(selection)) {
-        $setBlocksType(selection, () => $createParagraphNode());
-      }
-    });
-  };
-
-  const formatHeading = (headingSize: HeadingTagType) => {
-    editor.update(() => {
-      const selection = $getSelection();
-      if ($isRangeSelection(selection)) {
-        $setBlocksType(selection, () => $createHeadingNode(headingSize));
-      }
-    });
-  };
-
-  const formatBulletList = () => {
-    editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
-  };
-
-  const formatNumberedList = () => {
-    editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
-  };
-
-  const formatQuote = () => {
-    editor.update(() => {
-      const selection = $getSelection();
-      if ($isRangeSelection(selection)) {
-        $setBlocksType(selection, () => $createQuoteNode());
-      }
-    });
-  };
-
-  const formatCode = () => {
-    editor.update(() => {
-      const selection = $getSelection();
-      if ($isRangeSelection(selection)) {
-        $setBlocksType(selection, () => $createCodeNode());
-      }
-    });
-  };
-
   const onBlockTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newBlockType = e.target.value;
-    setBlockType(newBlockType);
-    switch (newBlockType) {
-      case "paragraph":
-        formatParagraph();
-        break;
-      case "h1":
-        formatHeading("h1");
-        break;
-      case "h2":
-        formatHeading("h2");
-        break;
-      case "h3":
-        formatHeading("h3");
-        break;
-      case "ul":
-        formatBulletList();
-        break;
-      case "ol":
-        formatNumberedList();
-        break;
-      case "quote":
-        formatQuote();
-        break;
-      case "code":
-        formatCode();
-        break;
-      default:
-        break;
+    const action = getNodeAction(newBlockType);
+    if (action) {
+      action(editor);
+      
+      // For inline nodes, reset dropdown to current block type since they don't change block context
+      const isInlineNode = newBlockType === 'numerical-material' || newBlockType === 'categorical-material';
+      if (!isInlineNode) {
+        setBlockType(newBlockType);
+      }
+      // For inline nodes, blockType will naturally reset to current block via the update listener
     }
   };
+
+  // Get text formatting options
+  const textFormatOptions = getTextFormatOptions();
 
   return (
     <div
@@ -180,38 +109,18 @@ export default function ToolbarPlugin() {
           </option>
         ))}
       </select>
-      <button
-        onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")}
-        className={"toolbar-item " + (isBoldToggleOn ? "active" : "")}
-      >
-        B
-      </button>
-      <button
-        onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")}
-        className={"toolbar-item " + (isItalicToggleOn ? "active" : "")}
-      >
-        I
-      </button>
-      <button
-        onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline")}
-        className={"toolbar-item " + (isUnderlineToggleOn ? "active" : "")}
-      >
-        U
-      </button>
-      <button
-        onClick={() =>
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough")
-        }
-        className={"toolbar-item " + (isStrikethroughToggleOn ? "active" : "")}
-      >
-        S
-      </button>
-      <button
-        onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code")}
-        className={"toolbar-item " + (isCodeToggleOn ? "active" : "")}
-      >
-        {"<>"}
-      </button>
+      
+      {/* Dynamic text formatting buttons */}
+      {textFormatOptions.map((option) => (
+        <button
+          key={option.key}
+          onClick={() => executeTextFormat(editor, option.command)}
+          className={"toolbar-item " + (option.getActiveState?.(editorContext) ? "active" : "")}
+          title={option.label}
+        >
+          {option.icon}
+        </button>
+      ))}
     </div>
   );
 }

@@ -1,13 +1,14 @@
 import { DecoratorNode, SerializedLexicalNode, Spread } from "lexical";
-import type { JSX } from 'react';
+import type { JSX } from "react";
 import "../MaterialNode.css";
 
-export type NumericalMaterialPayload = {
+export type NumericalMaterialNodePayload = {
   material: string;
   color: string;
   min: number;
   max: number;
   value: number;
+  unit: string;
 };
 
 export type SerializedNumericalMaterialNode = Spread<
@@ -17,6 +18,7 @@ export type SerializedNumericalMaterialNode = Spread<
     min: number;
     max: number;
     value: number;
+    unit: string;
     type: "numerical-material";
     version: 1;
   },
@@ -29,25 +31,33 @@ export class NumericalMaterialNode extends DecoratorNode<JSX.Element> {
   __min: number;
   __max: number;
   __value: number;
+  __unit: string;
 
-  static getType() { return "numerical-material"; }
+  static getType() {
+    return "numerical-material";
+  }
   static clone(node: NumericalMaterialNode) {
-    return new NumericalMaterialNode({
-      material: node.__material,
-      color: node.__color,
-      min: node.__min,
-      max: node.__max,
-      value: node.__value,
-    }, node.__key);
+    return new NumericalMaterialNode(
+      {
+        material: node.__material,
+        color: node.__color,
+        min: node.__min,
+        max: node.__max,
+        value: node.__value,
+        unit: node.__unit,
+      },
+      node.__key
+    );
   }
 
-  constructor(payload: NumericalMaterialPayload, key?: string) {
+  constructor(payload: NumericalMaterialNodePayload, key?: string) {
     super(key);
     this.__material = payload.material;
     this.__color = payload.color;
     this.__min = payload.min;
     this.__max = payload.max;
     this.__value = payload.value;
+    this.__unit = payload.unit;
   }
 
   exportJSON(): SerializedNumericalMaterialNode {
@@ -59,6 +69,7 @@ export class NumericalMaterialNode extends DecoratorNode<JSX.Element> {
       min: this.__min,
       max: this.__max,
       value: this.__value,
+      unit: this.__unit,
     };
   }
 
@@ -76,48 +87,63 @@ export class NumericalMaterialNode extends DecoratorNode<JSX.Element> {
     return span;
   }
 
-  updateDOM(): boolean { return false; }
+  updateDOM(): boolean {
+    return false;
+  }
 
   decorate(): JSX.Element {
     return <NumericalMaterialComponent node={this} />;
   }
 }
 
-export function NumericalMaterialComponent({ node }: { node: NumericalMaterialNode }) {
-  // TODO: Add onChange logic to update value in editor
-  return (
-    <span className="material-node" style={{ background: node.__color }}>
-      <input
-        type="number"
-        min={node.__min}
-        max={node.__max}
-        value={node.__value}
-        style={{ width: 60, marginRight: 6 }}
-        readOnly
-      />
-      <span>{node.__material}</span>
-    </span>
-  );
-}
-
-export function NumericalMaterialPreview(props: {
+export type NumericalMaterialNodeProps = {
   material: string;
   color: string;
   min: number;
   max: number;
   value: number;
-}) {
+  unit: string;
+  showMaterial?: boolean;
+  readOnly?: boolean;
+  onValueChange?: (value: string) => void;
+};
+
+// actual node component used in the editor
+export function NumericalMaterial(props: NumericalMaterialNodeProps) {
   return (
     <span className="material-node" style={{ background: props.color }}>
       <input
+        className="material-node-numeric-input"
         type="number"
         min={props.min}
         max={props.max}
         value={props.value}
-        style={{ width: 60, marginRight: 6 }}
-        readOnly
+        readOnly={props.readOnly}
+        onChange={props.onValueChange ? (e) => props.onValueChange!(e.target.value) : undefined}
       />
-      <span>{props.material}</span>
+      <span className="material-node-numeric-unit">{props.unit}</span>
+      {props.showMaterial !== false && <span>{props.material}</span>}
     </span>
   );
+}
+
+
+// component wrapper used to preview the node in storybook
+export function NumericalMaterialComponent({ node }: { node: NumericalMaterialNode }) {
+  return (
+    <NumericalMaterial
+      material={node.__material}
+      color={node.__color}
+      min={node.__min}
+      max={node.__max}
+      value={node.__value}
+      unit={node.__unit}
+      showMaterial={true}
+      readOnly={true}
+    />
+  );
+}
+
+export function NumericalMaterialNodePreview(props: NumericalMaterialNodeProps) {
+  return <NumericalMaterial {...props} />;
 }
