@@ -12,9 +12,14 @@ type Story = StoryObj<typeof Editor>;
 export const Default: Story = {
   args: {
     shouldAnimate: true,
-    placeholder: "Type lab notes..."
+    backgroundColor: "#fff",
+    placeholder: "type lab notes..."
   }
 };
 
 export const CustomStyle: Story = {
+  args: {
+    backgroundColor: "#61a957",
+    placeholder: "my notes"
+  }
 }; 

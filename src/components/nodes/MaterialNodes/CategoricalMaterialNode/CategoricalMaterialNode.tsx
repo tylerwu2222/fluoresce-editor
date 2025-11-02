@@ -1,65 +1,78 @@
 import { DecoratorNode, SerializedLexicalNode, Spread } from "lexical";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $getNodeByKey } from "lexical";
+import { useContext } from "react";
 import type { JSX } from "react";
-import "../MaterialNode.css";
+import { getContrastTextColor, DEFAULT_MATERIAL_COLOR } from "../../../../utils/color";
+import { createLexicalNodeHelpers } from "../../../../utils/createLexicalNode";
+import { CustomDropdown } from "../../../customElements/CustomDropdown/CustomDropdown";
+import { EditorSettingsContext } from "../../../Editor/EditorSettingsContext";
 
-export type CategoricalMaterialNodePayload = {
+export type CategoricalMaterialNodeProps = {
   material: string;
-  color: string;
-  categories: string[];
+  color?: string;
+  options: string[];
   selected: string;
+  showMaterial?: boolean;
+  readOnly?: boolean;
+  onMaterialChange?: (selected: string) => void;
+  fontFamily?: string;
+  fontSize?: string;
+  addOption?: boolean;
+  onAddOptionClick?: () => void;
 };
 
-// serialized node for export/import
+// Serialization
+const CATEGORICAL_PAYLOAD_KEYS = [
+  "material",
+  "color",
+  "options",
+  "selected",
+  "fontSize",
+] as const;
+export type CategoricalMaterialNodePayload = Pick<
+  CategoricalMaterialNodeProps,
+  typeof CATEGORICAL_PAYLOAD_KEYS[number]
+>;
 export type SerializedCategoricalMaterialNodeNode = Spread<
-  {
-    material: string;
-    color: string;
-    categories: string[];
-    selected: string;
+  CategoricalMaterialNodePayload & {
     type: "categorical-material";
     version: 1;
   },
   SerializedLexicalNode
 >;
+const categoricalHelpers = createLexicalNodeHelpers<CategoricalMaterialNodePayload>(
+  "categorical-material",
+  1,
+  CATEGORICAL_PAYLOAD_KEYS
+);
 
 export class CategoricalMaterialNode extends DecoratorNode<JSX.Element> {
-  __material: string;
-  __color: string;
-  __categories: string[];
-  __selected: string;
+  __material!: string;
+  __color!: string;
+  __options!: string[];
+  __selected!: string;
+  __fontSize?: string;
 
   static getType() {
     return "categorical-material";
   }
   static clone(node: CategoricalMaterialNode) {
     return new CategoricalMaterialNode(
-      {
-        material: node.__material,
-        color: node.__color,
-        categories: node.__categories,
-        selected: node.__selected,
-      },
+      categoricalHelpers.createPayload(node) as CategoricalMaterialNodePayload,
       node.__key
     );
   }
 
   constructor(payload: CategoricalMaterialNodePayload, key?: string) {
     super(key);
-    this.__material = payload.material;
-    this.__color = payload.color;
-    this.__categories = payload.categories;
-    this.__selected = payload.selected;
+    categoricalHelpers.assignPayload(this, payload, {
+      color: DEFAULT_MATERIAL_COLOR,
+    });
   }
 
   exportJSON(): SerializedCategoricalMaterialNodeNode {
-    return {
-      type: "categorical-material",
-      version: 1,
-      material: this.__material,
-      color: this.__color,
-      categories: this.__categories,
-      selected: this.__selected,
-    };
+    return categoricalHelpers.createSerialized(this) as SerializedCategoricalMaterialNodeNode;
   }
 
   static importJSON(serialized: SerializedCategoricalMaterialNodeNode) {
@@ -70,9 +83,7 @@ export class CategoricalMaterialNode extends DecoratorNode<JSX.Element> {
     const span = document.createElement("span");
     span.style.display = "inline-flex";
     span.style.alignItems = "center";
-    span.style.background = this.__color;
     span.style.borderRadius = "4px";
-    span.style.padding = "2px 6px";
     return span;
   }
 
@@ -83,47 +94,72 @@ export class CategoricalMaterialNode extends DecoratorNode<JSX.Element> {
   decorate(): JSX.Element {
     return <CategoricalMaterialComponent node={this} />;
   }
+
+  setSelected(selected: string): void {
+    const writable = this.getWritable();
+    writable.__selected = selected;
+  }
 }
 
-export type CategoricalMaterialNodeProps = {
-  material: string;
-  color: string;
-  categories: string[];
-  selected: string;
-  showMaterial?: boolean;
-  onMaterialChange?: (selected: string) => void;
-};
-
+// actual node component used in the editor
 export function CategoricalMaterial(props: CategoricalMaterialNodeProps) {
   const {
     material,
     color,
-    categories,
+    options,
     selected,
     showMaterial = false,
+    readOnly,
     onMaterialChange,
+    fontFamily = '"Inter", sans-serif',
+    fontSize = "1em",
+    addOption,
+    onAddOptionClick,
   } = props;
+  const editorSettings = useContext(EditorSettingsContext);
+  const resolvedColor = color ?? DEFAULT_MATERIAL_COLOR;
+  const textColor = getContrastTextColor(resolvedColor);
+  const isReadOnly = readOnly ?? editorSettings.readOnly ?? !onMaterialChange;
   return (
-    <span className="material-node" style={{ background: color }}>
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        padding: 0,
+        fontFamily: fontFamily,
+        fontWeight: 300,
+        fontSize: fontSize,
+      }}
+    >
       {showMaterial && (
-        <span className="material-node-category-label">{material}</span>
+        <span style={{ 
+          color: textColor,
+          marginInlineEnd: "6px",
+        }}>
+          {material}
+        </span>
       )}
-      <select
-        value={selected}
-        onChange={
-          onMaterialChange ? (e) => onMaterialChange(e.target.value) : undefined
-        }
-      >
-        {categories.map((cat) => (
-          <option key={cat} value={cat}>
-            {cat}
-          </option>
-        ))}
-      </select>
+      <CustomDropdown
+        options={options}
+        selected={selected}
+        color={resolvedColor}
+        textColor={textColor}
+        onSelect={(value) => {
+          if (onMaterialChange) {
+            onMaterialChange(value);
+          }
+        }}
+        readOnly={isReadOnly}
+        fontFamily={fontFamily}
+        fontSize={fontSize}
+        addOption={!isReadOnly && addOption}
+        onAddOptionClick={onAddOptionClick}
+      />
     </span>
   );
 }
 
+// component wrapper used to preview the node in storybook
 export function CategoricalMaterialComponent({
   node,
   showMaterial = false,
@@ -133,14 +169,30 @@ export function CategoricalMaterialComponent({
   showMaterial?: boolean;
   onMaterialChange?: (selected: string) => void;
 }) {
+  const [editor] = useLexicalComposerContext();
+
+  const handleMaterialChange = (selected: string) => {
+    editor.update(() => {
+      const nodeKey = node.getKey();
+      const currentNode = $getNodeByKey(nodeKey) as CategoricalMaterialNode;
+      if (currentNode) {
+        currentNode.setSelected(selected);
+      }
+    });
+    if (onMaterialChange) {
+      onMaterialChange(selected);
+    }
+  };
+
   return (
     <CategoricalMaterial
       material={node.__material}
       color={node.__color}
-      categories={node.__categories}
+      options={node.__options}
       selected={node.__selected}
       showMaterial={showMaterial}
-      onMaterialChange={onMaterialChange}
+      onMaterialChange={handleMaterialChange}
+      fontSize={node.__fontSize}
     />
   );
 }

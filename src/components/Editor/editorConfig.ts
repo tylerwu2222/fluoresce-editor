@@ -99,10 +99,10 @@ export const availableNodeOptions: NodeOption[] = [
     action: createInlineNodeAction(() => new NumericalMaterialNode({
       material: "Temperature",
       color: "#e3f2fd",
-      min: 0,
-      max: 100,
       value: 25,
-      unit: "°C"
+      unit: "°C",
+      unitOptions: ["°C", "°F", "K"],
+      materialOptions: ["Temperature", "Temperature 2"],
     }))
   },
   { 
@@ -112,7 +112,7 @@ export const availableNodeOptions: NodeOption[] = [
     action: createInlineNodeAction(() => new CategoricalMaterialNode({
       material: "Status",
       color: "#f3e5f5",
-      categories: ["Active", "Inactive", "Pending"],
+      options: ["Active", "Inactive", "Pending"],
       selected: "Active"
     }))
   },

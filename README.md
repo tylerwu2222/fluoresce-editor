@@ -17,3 +17,10 @@ An opinionated rich-text editor built on top of lexical for use with ELNs (elect
 - **synced material counts**: update a material amount for a single step -> get updated total amount needed for the protocol
 - **popover videos** so labmates can record standard operating procedures for specific steps
 - more custom nodes...
+
+### Development
+#### Setup
+run `npm install` to install dependencies
+
+#### Run
+run `npm run storybook` to start the storybook server

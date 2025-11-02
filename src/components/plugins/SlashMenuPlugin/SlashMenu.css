@@ -8,17 +8,18 @@
   z-index: 1000;
   margin-top: 4px;
   font-family: var(--font-primary);
+  font-size: 0.875rem;
 }
 
 .slash-menu-options-wrapper {
   padding: 4px 0;
-  max-height: 300px;
+  max-height: 150px;
   overflow-y: auto;
 }
 
 .slash-menu-footer {
   border-top: 1px solid #eee;
   padding: 8px 16px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #777;
 }
