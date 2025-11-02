@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
   $getSelection,
@@ -10,6 +11,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { SlashMenu, SlashMenuOptionData } from "./SlashMenu";
 import { getAllOptions } from "../../Editor/editorConfig";
+import { EditorSettingsContext } from "../../Editor/EditorSettingsContext";
 
 function getCursorRect(): DOMRect | null {
   const selection = window.getSelection();
@@ -27,6 +29,7 @@ const allBlockOptions: SlashMenuOptionData[] = getAllOptions().map(option => ({
 
 export default function SlashMenuPlugin() {
   const [editor] = useLexicalComposerContext();
+  const { backgroundColor, textColor } = React.useContext(EditorSettingsContext);
   const [showMenu, setShowMenu] = useState(false);
   const [menuPos, setMenuPos] = useState<{ left: number; top: number } | null>(null);
   const [search, setSearch] = useState("");
@@ -103,6 +106,8 @@ export default function SlashMenuPlugin() {
       options={allBlockOptions}
       selected={selected}
       setSelected={setSelected}
+      backgroundColor={backgroundColor}
+      textColor={textColor}
     />
   );
 }

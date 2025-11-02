@@ -12,18 +12,18 @@ export const Default = Template.bind({});
 Default.args = {
   material: "Water",
   color: "#e0f7fa",
-  min: 0,
-  max: 100,
   value: 42,
   unit: "g/L",
+  unitOptions: ["g/L", "mg/L", "mol/L", "ppm", "%"],
+  materialOptions: ["Water", "Ethanol", "Methanol", "Acetone", "Toluene"],
 };
 
 export const Custom = Template.bind({});
 Custom.args = {
   material: "Ethanol",
   color: "#ffe0b2",
-  min: -10,
-  max: 50,
   value: 10,
   unit: "g/L",
+  unitOptions: ["g/L", "mg/L", "mol/L", "M", "mM", "µM"],
+  materialOptions: ["Water", "Ethanol", "Methanol", "Acetone", "Toluene", "DMSO"],
 };

@@ -30,9 +30,12 @@ import "./ToolbarPlugin.css";
 
 const BlockTypeMap = createBlockTypeMap();
 
+// Generate font sizes from 8px to 72px
+const fontSizes = Array.from({ length: 17 }, (_, i) => `${4 * i + 8}px`);
+
 export default function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
-  const { shouldAnimate } = React.useContext(EditorSettingsContext);
+  const { shouldAnimate, fontSize, setFontSize } = React.useContext(EditorSettingsContext);
   const editorContext = React.useContext(EditorContext);
   const {
     isEditorActive,
@@ -106,6 +109,23 @@ export default function ToolbarPlugin() {
         {Array.from(BlockTypeMap.keys()).map((key) => (
           <option key={key} value={key}>
             {BlockTypeMap.get(key)}
+          </option>
+        ))}
+      </select>
+      
+      <select
+        value={fontSize || "15px"}
+        onChange={(e) => setFontSize?.(e.target.value)}
+        style={{
+          padding: "4px 8px",
+          border: "1px solid #ccc",
+          borderRadius: "4px",
+          fontSize: "12px",
+        }}
+      >
+        {fontSizes.map((size) => (
+          <option key={size} value={size}>
+            {size}
           </option>
         ))}
       </select>

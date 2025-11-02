@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { LexicalEditor, $getSelection, $isRangeSelection, $isTextNode } from "lexical";
 import { SlashMenuOption } from "./SlashMenuOption";
+import { hexToRgba } from "../../../utils/color";
 import "./SlashMenu.css";
 
 export type SlashMenuOptionData = {
@@ -19,9 +20,11 @@ type SlashMenuProps = {
   search: string;
   selected: number;
   setSelected: React.Dispatch<React.SetStateAction<number>>;
+  backgroundColor?: string;
+  textColor?: string;
 };
 
-export function SlashMenu({ menuRef, close, menuPos, options, search, selected, setSelected }: SlashMenuProps) {
+export function SlashMenu({ menuRef, close, menuPos, options, search, selected, setSelected, backgroundColor, textColor }: SlashMenuProps) {
   const [editor] = useLexicalComposerContext();
 
   const filteredOptions = options.filter((option) =>
@@ -89,11 +92,22 @@ export function SlashMenu({ menuRef, close, menuPos, options, search, selected, 
     return () => window.removeEventListener("keydown", handleKeyDown, true);
   }, [filteredOptions, selected, setSelected, editor, close]);
 
+  const borderColor = textColor ? hexToRgba(textColor, 0.3) : undefined;
+  const footerBorderColor = textColor ? hexToRgba(textColor, 0.2) : undefined;
+  const footerTextColor = textColor ? hexToRgba(textColor, 0.6) : undefined;
+
   return createPortal(
     <div
       ref={menuRef}
       className="slash-menu"
-      style={{ left: menuPos.left, top: menuPos.top, position: "fixed" }}
+      style={{ 
+        left: menuPos.left, 
+        top: menuPos.top, 
+        position: "fixed",
+        ...(backgroundColor && { background: backgroundColor }),
+        ...(textColor && { color: textColor }),
+        ...(borderColor && { borderColor: borderColor }),
+      }}
     >
       <div className="slash-menu-options-wrapper">
         {filteredOptions.map((option, i) => (
@@ -104,12 +118,20 @@ export function SlashMenu({ menuRef, close, menuPos, options, search, selected, 
             onClick={() => {
               executeOption(option);
             }}
+            backgroundColor={backgroundColor}
+            textColor={textColor}
           >
             {option.label}
           </SlashMenuOption>
         ))}
       </div>
-      <div className="slash-menu-footer">
+      <div 
+        className="slash-menu-footer"
+        style={{
+          ...(footerBorderColor && { borderTopColor: footerBorderColor }),
+          ...(footerTextColor && { color: footerTextColor }),
+        }}
+      >
         <span>Type '/{search}' on the page</span>
       </div>
     </div>,
